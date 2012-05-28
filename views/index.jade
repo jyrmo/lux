@@ -1,0 +1,23 @@
+h1= title
+#upload-container.container
+	h2.section-header Upload images
+	.section
+		form(action='/upload', method='post', enctype='multipart/form-data')
+			input(type='file', name='img')
+			input(type='text', name='tags', maxlength='100')
+			br
+			input(type='submit', value='upload')
+#create-situation-container.container
+	h2.section-header Create situation
+	.section
+		| Description:
+		br
+		textarea
+		#situation-images
+			foo
+			.situation-image
+			.situation-image
+			.situation-image
+			.situation-image
+		button save
+		#images
