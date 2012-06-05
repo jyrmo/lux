@@ -21,7 +21,7 @@ var upload = function(req, res) {
 		fs.readFile(tempfilePath, function(err, data) {
 			doc.fullsize = data;
 			fs.unlink(tempfilePath, function() {
-				imgUtil.resize(filePath, tempfilePath, 100, 62, function(err, stdout, stderr) {
+				imgUtil.resize(filePath, tempfilePath, 200, 124, function(err, stdout, stderr) {
 					fs.readFile(tempfilePath, function(err, data) {
 						doc.thumbnail = data;
 						fs.unlink(tempfilePath, function() {

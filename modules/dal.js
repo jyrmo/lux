@@ -8,17 +8,12 @@ var Db = require('mongodb').Db,
 	BSON = require('mongodb').pure().BSON,
 	fs = require('fs');
 
-var db = new Db(
-		'lux',
-		new Server(
-				"127.0.0.1",
-				27017,
-				{auto_reconnect: false, poolSize: 4}
-		),
-		{native_parser: false}
-);
+var getDb = function() {
+	return new Db('lux', new Server("127.0.0.1", 27017, {auto_reconnect: true, poolSize: 4}),{native_parser: false});
+};
 
 var save = function(collectionName, doc) {
+	var db = getDb();
 	db.open(function(err, db) {
 		db.collection(collectionName, function(err, collection) {
 			collection.save(doc);
@@ -35,6 +30,7 @@ var saveImg = function(doc) {
 };
 
 var getImgById = function(id, callback) {
+	var db = getDb();
 	db.open(function(err, db) {
 		db.collection('imgs', function(err, collection) {
 			var docId = new ObjectID(id);
@@ -46,6 +42,19 @@ var getImgById = function(id, callback) {
 	});
 };
 
+var getAllImgs = function(callback) {
+	var db = getDb();
+	db.open(function(err, db) {
+		db.collection('imgs', function(err, collection) {
+			collection.find({}, {'fields' : {'_id' : 1, 'tags' : 1}}).toArray(function(err, docs) {
+				db.close();
+				callback(docs);
+			});
+		});
+	});
+};
+
 exports.save = save;
 exports.saveImg = saveImg;
 exports.getImgById = getImgById;
+exports.getAllImgs = getAllImgs;

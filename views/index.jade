@@ -14,10 +14,13 @@ h1= title
 		br
 		textarea
 		#situation-images
-			foo
 			.situation-image
 			.situation-image
 			.situation-image
 			.situation-image
 		button save
+		br
+		input(type='text', name='tag-search')
 		#images
+			each doc in imgs
+				img(src='/thumb/#{doc._id}')

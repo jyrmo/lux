@@ -1,3 +1,7 @@
+var dal = require('../modules/dal');
+
 exports.index = function(req, res) {
-	res.render('index', {title: 'lux * admin', appname : 'lux'});
+	dal.getAllImgs(function(docs) {
+		res.render('index', {title: 'lux * admin', appname : 'lux', imgs : docs});
+	});
 };
