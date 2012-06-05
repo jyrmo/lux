@@ -15,7 +15,6 @@ var upload = function(req, res) {
 	};
 	
 	var tempfilePath = path.resolve('tmp/' + req.files.img.name);
-	console.log(tempfilePath);
 	// Create resized versions.
 	imgUtil.resize(filePath, tempfilePath, 450, 280, function(err, stdout, stderr) {
 		fs.readFile(tempfilePath, function(err, data) {
@@ -31,7 +30,7 @@ var upload = function(req, res) {
 								// Save doc in db.
 								dal.saveImg(doc);
 								
-								// TODO: Redirect.
+								// Redirect.
 								res.redirect('/');
 							});
 						});

@@ -12,15 +12,23 @@ h1= title
 	.section
 		| Description:
 		br
-		textarea
+		textarea(id='situation-description', cols='100', rows='4')
 		#situation-images
-			.situation-image
-			.situation-image
-			.situation-image
-			.situation-image
-		button save
+			.situation-image-container
+				.situation-image(id='img1')
+				input(type='text', id='img1-val', maxlength='4', size='4')
+			.situation-image-container
+				.situation-image(id='img2')
+				input(type='text', id='img2-val', maxlength='4', size='4')
+			.situation-image-container
+				.situation-image(id='img3')
+				input(type='text', id='img3-val', maxlength='4', size='4')
+			.situation-image-container
+				.situation-image(id='img4')
+				input(type='text', id='img4-val', maxlength='4', size='4')
+		button#situation-save save
 		br
 		input(type='text', name='tag-search')
 		#images
 			each doc in imgs
-				img(src='/thumb/#{doc._id}')
+				img(id='#{doc._id}', src='/thumb/#{doc._id}')

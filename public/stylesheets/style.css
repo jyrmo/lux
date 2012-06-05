@@ -12,20 +12,30 @@ div.section {
 }
 
 #situation-images {
-	padding : 5px;
-	width : 600px;
-	height : 70px;
+	padding : 1px;
+	width : 850px;
+	height : 160px;
 	border-style : solid;
 	border-width : 1px;
 }
 
-div.situation-image {
-	margin-right: 10px;
-	width : 100px;
-	height : 62px;
+div.situation-image-container {
+	width : 202px;
+	height : 150px;
+	margin : 3px;
 	border-style : inherit;
 	border-width : inherit;
 	display : inline-block;
+}
+
+div.situation-image {
+	margin-right: 10px;
+	width : 200px;
+	height : 124px;
+	border-style : inherit;
+	border-width : inherit;
+	background-repeat : no-repeat;
+	background-position : center;
 }
 
 #images {
@@ -34,4 +44,9 @@ div.situation-image {
 	border-style : solid;
 	border-width : 1px;
 	overflow : scroll;
+}
+
+#images img {
+	margin : 1px;
+	cursor : pointer;
 }

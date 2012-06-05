@@ -9,6 +9,7 @@ var express = require('express'),
 	routes = require('./routes'),
 	upload = require('./routes/upload'),
 	img = require('./routes/img');
+	situation = require('./routes/situation');
 
 var app = module.exports = express.createServer();
 
@@ -39,6 +40,8 @@ app.get('/', routes.index);
 app.post('/upload', upload.upload);
 app.get('/img/:id', img.img);
 app.get('/thumb/:id', img.thumb);
+app.post('/situation', situation.save);
+app.get('/situations/:num', situation.list);
 
 app.listen(3000, function(){
 	console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
