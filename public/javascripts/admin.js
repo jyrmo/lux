@@ -16,6 +16,20 @@ var tagSearch = {
 	search : function() {
 		var searchTerm = $('input[name="tag-search"]').val();
 		console.log(searchTerm);
+		if (searchTerm == '') {
+			$('#images img').show();
+		} else {
+			for (var i in imgs) {
+				for (var j in imgs[i].tags) {
+					if (imgs[i].tags[j].match(searchTerm) != null) {
+						$('#' + imgs[i]._id).show();
+						break;
+					} else {
+						$('#' + imgs[i]._id).hide();
+					}
+				}
+			}
+		}
 	}
 };
 
