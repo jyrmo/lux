@@ -1,0 +1,61 @@
+body {
+	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+#situation-container, #situation-description, div.img, #stats-container {
+	border-style : solid;
+	border-width : 1px;
+}
+
+#situation-container, #stats-container {
+	display : inline-block;
+	height : 80%;
+	min-height : 200px;
+	padding : 10px;
+}
+
+#situation-container {
+	width : 934px;
+	min-width : 934px;
+	margin-left : 10px;
+	margin-right : 0px;
+}
+
+#situation-description {
+	width : 100%;
+	min-height : 30px;
+	margin-bottom : 10px;
+	padding-left : 10px;
+}
+
+div.img {
+	display : inline-block;
+	width : 452px;
+	height : 282px;
+	padding : 0px;
+	cursor : pointer;
+}
+
+#img-1, #img-2 {
+	margin-bottom : 10px;
+}
+
+#img-1, #img-3 {
+	margin-right : 10px;
+}
+
+#stats-container {
+	width : 20%;
+	margin-left : 0px;
+}
+
+#msg {
+	display : none;
+	position : absolute;
+	left : 200px;
+	top : 200px;
+	padding : 10px;
+	border-style : solid;
+	border-width : 1px;
+	background-color : #d0f0d0;
+}
