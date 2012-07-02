@@ -61,10 +61,10 @@ var game = {
 			var curSituation = game.situations[game.idxSituation++];
 			$('#situation-description').html('<p>' + curSituation.description + '</p>');
 			// TODO: Randomize imgs.
-			$('#img-1').html(game.createImgHtml(curSituation.img1.id));
-			$('#img-2').html(game.createImgHtml(curSituation.img2.id));
-			$('#img-3').html(game.createImgHtml(curSituation.img3.id));
-			$('#img-4').html(game.createImgHtml(curSituation.img4.id));
+			$('#img-1').css('background-image', 'url("/img/' + curSituation.img1.id + '")');
+			$('#img-2').css('background-image', 'url("/img/' + curSituation.img2.id + '")');
+			$('#img-3').css('background-image', 'url("/img/' + curSituation.img3.id + '")');
+			$('#img-4').css('background-image', 'url("/img/' + curSituation.img4.id + '")');
 		} else {
 			// TODO Handle this better.
 			messenger.display('Game over');

@@ -34,6 +34,8 @@ div.img {
 	height : 282px;
 	padding : 0px;
 	cursor : pointer;
+	background-repeat : no-repeat;
+	background-position : center;
 }
 
 #img-1, #img-2 {
