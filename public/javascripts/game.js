@@ -32,13 +32,18 @@ var messenger = {
 var game = {
 	numSituations : 10,
 	situations : null,
-	idxSituation : 0,
+	idxSituation : -1,
+	mapPosImgNum : {},
 	
 	init : function() {
 		messenger.display('Loading situations.');
 		
-		// TODO: Count right and wrong answers.
-		$('div.img').click(game.nextSituation);
+		$('div.img').click(function() {
+			var divId = $(this).attr('id');
+			var arrDivId = divId.split('-');
+			var posNum = arrDivId[1];
+			game.checkAnswer(posNum);
+		});
 		
 		$.ajax({
 			cache : false,
@@ -56,15 +61,53 @@ var game = {
 		});
 	},
 	
+	checkAnswer : function(posNum) {
+		// TODO: Save points in stats.
+		
+		var curSituation = game.situations[game.idxSituation];
+		var imgNum = game.mapPosImgNum[posNum];
+		var points = curSituation['img' + imgNum].points;
+		var isCorrect = parseFloat(points) == 1;
+		game.notifyAnswer(imgNum, isCorrect);
+		
+		game.nextSituation();
+	},
+	
+	notifyAnswer : function(imgNum, isCorrect) {
+		var borderColor = isCorrect ? '#40f040' : '#f04040';
+		$('#img-' + imgNum).css('border-color', borderColor);
+		$('#img-' + imgNum).animate(
+			{
+				'border-width' : '5px'
+			},
+			400,
+			function() {
+				$(this).animate(
+					{
+						'border-width' : '1px'
+					},
+					400
+				);
+				$(this).css('border-color', '#000000');
+			}
+		);
+	},
+	
 	nextSituation : function() {
+		game.mapPosImgNum = {};
+		game.idxSituation++;
 		if (game.idxSituation < game.situations.length) {
-			var curSituation = game.situations[game.idxSituation++];
+			var curSituation = game.situations[game.idxSituation];
 			$('#situation-description').html('<p>' + curSituation.description + '</p>');
 			// TODO: Randomize imgs.
 			$('#img-1').css('background-image', 'url("/img/' + curSituation.img1.id + '")');
+			game.mapPosImgNum["1"] = 1;
 			$('#img-2').css('background-image', 'url("/img/' + curSituation.img2.id + '")');
+			game.mapPosImgNum["2"] = 2;
 			$('#img-3').css('background-image', 'url("/img/' + curSituation.img3.id + '")');
+			game.mapPosImgNum["3"] = 3;
 			$('#img-4').css('background-image', 'url("/img/' + curSituation.img4.id + '")');
+			game.mapPosImgNum["4"] = 4;
 		} else {
 			// TODO Handle this better.
 			messenger.display('Game over');
