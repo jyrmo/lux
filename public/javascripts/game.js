@@ -29,20 +29,37 @@ var messenger = {
 	}
 };
 
+var time = {
+	timeout : null,
+	curTime : 0,
+	
+	update : function() {
+		$('#time').html(++time.curTime);
+		time.timeout = setTimeout('time.update()', 1000);
+	},
+	
+	stop : function() {
+		clearTimeout(time.timeout);
+	}
+};
+
 var game = {
 	numSituations : 10,
 	situations : null,
 	idxSituation : -1,
 	mapPosImgNum : {},
+	points : 0,
 	
 	init : function() {
 		messenger.display('Loading situations.');
 		
 		$('div.img').click(function() {
-			var divId = $(this).attr('id');
-			var arrDivId = divId.split('-');
-			var posNum = arrDivId[1];
-			game.checkAnswer(posNum);
+			if (game.idxSituation < game.situations.length) {
+				var divId = $(this).attr('id');
+				var arrDivId = divId.split('-');
+				var posNum = arrDivId[1];
+				game.checkAnswer(posNum);
+			}
 		});
 		
 		$.ajax({
@@ -54,6 +71,7 @@ var game = {
 				messenger.clear();
 				game.situations = data;
 				game.nextSituation();
+				time.update();
 			},
 			error : function(jqXHR, textStatus, errorThrown) {
 				messenger.display('Error loading situations: ' + errorThrown);
@@ -62,12 +80,11 @@ var game = {
 	},
 	
 	checkAnswer : function(posNum) {
-		// TODO: Save points in stats.
-		
 		var curSituation = game.situations[game.idxSituation];
 		var imgNum = game.mapPosImgNum[posNum];
-		var points = curSituation['img' + imgNum].points;
-		var isCorrect = parseFloat(points) == 1;
+		game.points += parseFloat(curSituation['img' + imgNum].points);
+		$('#points').html(game.points + '/' + (game.idxSituation + 1));
+		var isCorrect = parseFloat(game.points) == 1;
 		game.notifyAnswer(imgNum, isCorrect);
 		
 		game.nextSituation();
@@ -109,7 +126,9 @@ var game = {
 			$('#img-4').css('background-image', 'url("/img/' + curSituation.img4.id + '")');
 			game.mapPosImgNum["4"] = 4;
 		} else {
-			// TODO Handle this better.
+			// TODO: Save stats to DB.
+			
+			time.stop();
 			messenger.display('Game over');
 		}
 	},
