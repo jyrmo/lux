@@ -1,4 +1,5 @@
-var dal = require('../modules/dal');
+var dal = require('../modules/dal.js');
+var randUtil = require('../modules/randUtil.js');
 
 var save = function(req, res) {
 	dal.save('situations', req.body);
@@ -8,10 +9,12 @@ var save = function(req, res) {
 };
 
 var list = function(req, res) {
-	dal.getSituations(req.params.num, function(docs) {
-		var jsonDocs = JSON.stringify(docs);
-		res.setHeader('Content-Type', 'text/json');
-		res.send(jsonDocs);
+	dal.getSituations(function(docs) {
+		var sample = randUtil.getRandSample(docs, req.params.num);
+		
+		var jsonSample= JSON.stringify(sample);
+//		res.setHeader('Content-Type', 'text/json');
+		res.send(jsonSample);
 	});
 };
 

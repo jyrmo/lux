@@ -1,8 +1,8 @@
 var fs = require('fs'),
 	path = require('path');
 
-var dal = require('../modules/dal');
-var imgUtil = require('../modules/imgUtil');
+var dal = require('../modules/dal.js');
+var imgUtil = require('../modules/imgUtil.js');
 
 var upload = function(req, res) {
 	var filePath = req.files.img.path;

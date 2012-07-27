@@ -1,4 +1,4 @@
-var dal = require('../modules/dal');
+var dal = require('../modules/dal.js');
 
 exports.index = function(req, res) {
 	dal.getAllImgs(function(docs) {

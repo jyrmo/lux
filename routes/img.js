@@ -1,4 +1,4 @@
-var dal = require('../modules/dal');
+var dal = require('../modules/dal.js');
 var fs = require('fs');
 
 var img = function(req, res) {

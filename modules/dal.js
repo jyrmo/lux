@@ -54,11 +54,11 @@ var getAllImgs = function(callback) {
 	});
 };
 
-var getSituations = function(limit, callback) {
+var getSituations = function(callback) {
 	var db = getDb();
 	db.open(function(err, db) {
 		db.collection('situations', function(err, collection) {
-			collection.find({}, {'limit' : limit}).toArray(function(err, docs) {
+			collection.find({}).toArray(function(err, docs) {
 				db.close();
 				callback(docs);
 			});

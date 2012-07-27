@@ -2,7 +2,6 @@
 /**
  * Module dependencies.
  */
-var nodeModulesPath = '/home/jyrms/.node_libraries';
 var express = require('express'),
 	form = require('util').format,
 	
