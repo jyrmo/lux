@@ -43,6 +43,27 @@ var time = {
 	}
 };
 
+var util = {
+	getRandInt : function(min, max) {
+		return Math.floor(Math.random() * max + min);
+	},
+	
+	getRandSample : function(arr, size) {
+		var copyArr = arr.slice(0);
+		var sample = [];
+		while (copyArr.length > 0 && sample.length < size) {
+			var randInt = util.getRandInt(0, copyArr.length);
+			sample.push(copyArr.splice(randInt, 1)[0]);
+		}
+		
+		return sample;
+	},
+	
+	shuffle : function(arr) {
+		return util.getRandSample(arr, arr.length);
+	}
+};
+
 var game = {
 	numSituations : 10,
 	situations : null,
@@ -116,15 +137,18 @@ var game = {
 		if (game.idxSituation < game.situations.length) {
 			var curSituation = game.situations[game.idxSituation];
 			$('#situation-description').html('<p>' + curSituation.description + '</p>');
-			// TODO: Randomize imgs.
-			$('#img-1').css('background-image', 'url("/img/' + curSituation.img1.id + '")');
-			game.mapPosImgNum["1"] = 1;
-			$('#img-2').css('background-image', 'url("/img/' + curSituation.img2.id + '")');
-			game.mapPosImgNum["2"] = 2;
-			$('#img-3').css('background-image', 'url("/img/' + curSituation.img3.id + '")');
-			game.mapPosImgNum["3"] = 3;
-			$('#img-4').css('background-image', 'url("/img/' + curSituation.img4.id + '")');
-			game.mapPosImgNum["4"] = 4;
+			
+			// TODO: Randomize imgs better.
+			var arrPos = [1, 2, 3, 4];
+			var arrPosShuffled = util.shuffle(arrPos);
+			var imgIdx = 0;
+			var posNum;
+			while (arrPosShuffled.length > 0) {
+				posNum = arrPosShuffled.shift();
+				imgIdx++;
+				$('#img-' + posNum).css('background-image', 'url("/img/' + curSituation['img' + imgIdx].id + '")');
+				game.mapPosImgNum[posNum] = imgIdx;
+			}
 		} else {
 			// TODO: Save stats to DB.
 			
