@@ -36,7 +36,7 @@ var messenger = {
 
 var time = {
 	startTime : null,
-	endTime : null,
+	gameTime : null,
 	timeout : null,
 	
 	start : function() {
@@ -52,8 +52,8 @@ var time = {
 	},
 	
 	stop : function() {
-		var curTime = new Date().valueOf();
-		time.endTime = curTime - time.startTime;
+		var curTime = Math.floor(new Date().valueOf() / 1000);
+		time.gameTime = curTime - time.startTime;
 		clearTimeout(time.timeout);
 	}
 };
@@ -169,10 +169,28 @@ var game = {
 				game.mapPosImgNum[posNum] = imgIdx;
 			}
 		} else {
-			// TODO: Save stats to DB.
-			
 			time.stop();
 			messenger.display('Game over');
+			
+			// Save stats.
+			$.ajax({
+				cache : false,
+				type : 'POST',
+				url : '/stats',
+				data : {
+					'time' : time.gameTime,
+					'points' : game.points
+				},
+				dataType : 'json',
+				success : function(data, textStatus, jqXHR) {
+					if (!data.success) {
+						messenger.display('Error saving stats.');
+					}
+				},
+				error : function(jqXHR, textStatus, errorThrown) {
+					messenger.display('Error saving stats: ' + errorThrown);
+				}
+			});
 		}
 	},
 	

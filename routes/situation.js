@@ -13,7 +13,7 @@ var list = function(req, res) {
 		var sample = randUtil.getRandSample(docs, req.params.num);
 		
 		var jsonSample= JSON.stringify(sample);
-//		res.setHeader('Content-Type', 'text/json');
+		res.setHeader('Content-Type', 'text/json');
 		res.send(jsonSample);
 	});
 };
