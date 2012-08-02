@@ -29,13 +29,19 @@ div.situation-image-container {
 }
 
 div.situation-image {
-	margin-right: 10px;
+	margin-right : 10px;
 	width : 200px;
 	height : 124px;
 	border-style : inherit;
 	border-width : inherit;
 	background-repeat : no-repeat;
 	background-position : center;
+}
+
+img.icon-remove {
+	display : none;
+	float : right;
+	cursor : pointer;
 }
 
 #images {

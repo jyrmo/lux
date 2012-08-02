@@ -34,43 +34,65 @@ var tagSearch = {
 };
 
 var imgSelection = {
-	selectedImgIds : [],
-	
-	nextVacant : 1,
+	selectedImgIds : {
+		'1' : null,
+		'2' : null,
+		'3' : null,
+		'4' : null
+	},
 	
 	init : function() {
 		$('#images img').click(function() {
-			if (imgSelection.nextVacant < 5) {
-				imgSelection.select($(this).attr('id'));
-			}
+			imgSelection.select($(this).attr('id'));
+		});
+		
+		$('div.situation-image > img.icon-remove').click(function() {
+			var slotId = $(this).parent().attr('id');
+			var slotIdx = slotId.substring(3);
+			imgSelection.removeImg(slotIdx);
 		});
 		
 		$('#situation-save').click(imgSelection.saveSituation);
 	},
 	
 	select : function(id) {
-		$('#img' + imgSelection.nextVacant).css('background-image', 'url("/thumb/' + id + '")');
-		imgSelection.selectedImgIds.push(id);
-		imgSelection.nextVacant++;
+		var slotIdx = 1;
+		var foundSlot = false;
+		while (slotIdx < 5 && !foundSlot) {
+			foundSlot = imgSelection.selectedImgIds['' + slotIdx] == null;
+			if (foundSlot) {
+				imgSelection.selectedImgIds['' + slotIdx] = id; 
+				$('#img' + slotIdx).css('background-image', 'url("/thumb/' + id + '")');
+				$('#img' + slotIdx + ' > img.icon-remove').show();
+			}
+			
+			slotIdx++;
+		}
+	},
+	
+	removeImg : function(slotIdx) {
+		imgSelection.selectedImgIds['' + slotIdx] = null;
+		$('#img' + slotIdx).css('background-image', 'none');
+		$('#img' + slotIdx + '> img.icon-remove').hide();
 	},
 	
 	saveSituation : function() {
 		var situation = {
 				'description' : $('#situation-description').val(),
 				'img1' : {
-					'id' : imgSelection.selectedImgIds.shift(),
+					'id' : imgSelection.selectedImgIds['1'],
 					'points' : $('#img1-val').val()
 				},
 				'img2' : {
-					'id' : imgSelection.selectedImgIds.shift(),
+					'id' : imgSelection.selectedImgIds['2'],
 					'points' : $('#img2-val').val()
 				},
 				'img3' : {
-					'id' : imgSelection.selectedImgIds.shift(),
+					'id' : imgSelection.selectedImgIds['3'],
 					'points' : $('#img3-val').val()
 				},
 				'img4' : {
-					'id' : imgSelection.selectedImgIds.shift(),
+					'id' : imgSelection.selectedImgIds['4'],
 					'points' : $('#img4-val').val()
 				}
 		};
@@ -88,6 +110,7 @@ var imgSelection = {
 	
 	reset : function() {
 		$('.situation-image').css('background-image', 'none');
+		$('.situation-image img.icon-remove').hide();
 		$('.situation-image-container input').val('');
 		$('#situation-description').val('');
 		imgSelection.selectedImgIds = [];
