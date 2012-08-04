@@ -33,7 +33,11 @@ var tagSearch = {
 	}
 };
 
-var imgSelection = {
+var situationEdit = {
+	mapSituationIdSituationIdx : {},
+	
+	situationId : null,
+	
 	selectedImgIds : {
 		'1' : null,
 		'2' : null,
@@ -42,26 +46,47 @@ var imgSelection = {
 	},
 	
 	init : function() {
+		for (var i = 0; i < situations.length; i++) {
+			situationEdit.mapSituationIdSituationIdx[situations[i]._id] = i;
+		}
+		
 		$('#images img').click(function() {
-			imgSelection.select($(this).attr('id'));
+			situationEdit.selectImg($(this).attr('id'));
 		});
 		
 		$('div.situation-image > img.icon-remove').click(function() {
 			var slotId = $(this).parent().attr('id');
 			var slotIdx = slotId.substring(3);
-			imgSelection.removeImg(slotIdx);
+			situationEdit.removeImg(slotIdx);
 		});
 		
-		$('#situation-save').click(imgSelection.saveSituation);
+		$('#situation-save').click(situationEdit.saveSituation);
+		
+		$('button.edit-situation').click(function() {
+			situationEdit.reset();
+			var situationId = $(this).parent().parent().attr('id');
+			situationEdit.editSituation(situationId);
+		});
 	},
 	
-	select : function(id) {
+	editSituation : function(situationId) {
+		situationEdit.situationId = situationId;
+		var curSituation = situations[situationEdit.mapSituationIdSituationIdx[situationId]];
+		$('#situation-description').val(curSituation.description);
+		for (var i = 1; i <= 4; i++) {
+			situationEdit.selectImg(curSituation['img' + i].id);
+			$('#img' + i + '-val').val(curSituation['img' + i].points);
+		}
+		$('#create-situation-container > div.section').show();
+	},
+	
+	selectImg : function(id) {
 		var slotIdx = 1;
 		var foundSlot = false;
 		while (slotIdx < 5 && !foundSlot) {
-			foundSlot = imgSelection.selectedImgIds['' + slotIdx] == null;
+			foundSlot = situationEdit.selectedImgIds['' + slotIdx] == null;
 			if (foundSlot) {
-				imgSelection.selectedImgIds['' + slotIdx] = id; 
+				situationEdit.selectedImgIds['' + slotIdx] = id; 
 				$('#img' + slotIdx).css('background-image', 'url("/thumb/' + id + '")');
 				$('#img' + slotIdx + ' > img.icon-remove').show();
 			}
@@ -71,31 +96,34 @@ var imgSelection = {
 	},
 	
 	removeImg : function(slotIdx) {
-		imgSelection.selectedImgIds['' + slotIdx] = null;
+		situationEdit.selectedImgIds['' + slotIdx] = null;
 		$('#img' + slotIdx).css('background-image', 'none');
 		$('#img' + slotIdx + '> img.icon-remove').hide();
 	},
 	
 	saveSituation : function() {
 		var situation = {
-				'description' : $('#situation-description').val(),
-				'img1' : {
-					'id' : imgSelection.selectedImgIds['1'],
-					'points' : $('#img1-val').val()
-				},
-				'img2' : {
-					'id' : imgSelection.selectedImgIds['2'],
-					'points' : $('#img2-val').val()
-				},
-				'img3' : {
-					'id' : imgSelection.selectedImgIds['3'],
-					'points' : $('#img3-val').val()
-				},
-				'img4' : {
-					'id' : imgSelection.selectedImgIds['4'],
-					'points' : $('#img4-val').val()
-				}
+			'description' : $('#situation-description').val(),
+			'img1' : {
+				'id' : situationEdit.selectedImgIds['1'],
+				'points' : $('#img1-val').val()
+			},
+			'img2' : {
+				'id' : situationEdit.selectedImgIds['2'],
+				'points' : $('#img2-val').val()
+			},
+			'img3' : {
+				'id' : situationEdit.selectedImgIds['3'],
+				'points' : $('#img3-val').val()
+			},
+			'img4' : {
+				'id' : situationEdit.selectedImgIds['4'],
+				'points' : $('#img4-val').val()
+			}
 		};
+		if (situationEdit.situationId !== null) {
+			situation._id = situationEdit.situationId;
+		}
 		
 		$.ajax({
 			url : '/situation',
@@ -103,7 +131,7 @@ var imgSelection = {
 			cache : false,
 			data : situation,
 			success : function(data, textStatus, jqXHR) {
-				imgSelection.reset();
+				situationEdit.reset();
 			}
 		});
 	},
@@ -113,13 +141,24 @@ var imgSelection = {
 		$('.situation-image img.icon-remove').hide();
 		$('.situation-image-container input').val('');
 		$('#situation-description').val('');
-		imgSelection.selectedImgIds = [];
-		imgSelection.nextVacant = 1;
+		situationEdit.selectedImgIds = {
+			'1' : null,
+			'2' : null,
+			'3' : null,
+			'4' : null
+		};
+		situationEdit.situationId = null;
+	}
+};
+
+var situationList = {
+	update : function() {
+		// TODO
 	}
 };
 
 $(document).ready(function() {
 	section.init('section-header');
 	tagSearch.init();
-	imgSelection.init();
+	situationEdit.init();
 });

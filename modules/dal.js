@@ -16,6 +16,11 @@ var save = function(collectionName, doc) {
 	var db = getDb();
 	db.open(function(err, db) {
 		db.collection(collectionName, function(err, collection) {
+			if (doc._id !== undefined) {
+				if (typeof doc._id == 'string') {
+					doc._id = new ObjectID(doc._id);
+				}
+			}
 			collection.save(doc);
 			db.close();
 		});

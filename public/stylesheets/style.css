@@ -49,10 +49,32 @@ img.icon-remove {
 	height : 300px;
 	border-style : solid;
 	border-width : 1px;
-	overflow : scroll;
+	overflow-y : scroll;
 }
 
 #images img {
 	margin : 1px;
 	cursor : pointer;
+}
+
+#situations {
+	width : 820px;
+	height : 500px;
+	overflow-y : scroll;
+}
+
+div.situation {
+	width : 802px;
+	padding : 0px;
+	margin-bottom : 1px;
+	border-style : solid;
+	border-width : 1px;
+}
+
+div.situation p {
+	width : 80%;
+}
+
+div.situation div.edit-remove {
+	float : right;
 }

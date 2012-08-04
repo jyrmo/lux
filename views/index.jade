@@ -1,5 +1,5 @@
-- var cmdImgs = 'var imgs = ' + JSON.stringify(imgs) + ';'
-script(type='text/javascript)!= cmdImgs
+- var cmds = 'var imgs = ' + JSON.stringify(imgs) + ';' + 'var situations = ' + JSON.stringify(situations) + ';'
+script(type='text/javascript')!= cmds
 
 h1= title
 #upload-container.container
@@ -39,3 +39,16 @@ h1= title
 		#images
 			each doc in imgs
 				img(id='#{doc._id}', src='/thumb/#{doc._id}')
+#list-situations.container
+	h2.section-header All situations
+	.section
+		#situations
+			each doc in situations
+				.situation(id='#{doc._id}')
+					.edit-remove
+						button.edit-situation(type='button') Edit
+					p #{doc.description}
+					img(src="/thumb/#{doc.img1.id}")
+					img(src="/thumb/#{doc.img2.id}")
+					img(src="/thumb/#{doc.img3.id}")
+					img(src="/thumb/#{doc.img4.id}")
