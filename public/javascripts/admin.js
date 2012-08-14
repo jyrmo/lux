@@ -132,6 +132,7 @@ var situationEdit = {
 			data : situation,
 			success : function(data, textStatus, jqXHR) {
 				situationEdit.reset();
+				situationList.update();
 			}
 		});
 	},
@@ -153,7 +154,36 @@ var situationEdit = {
 
 var situationList = {
 	update : function() {
-		// TODO
+		$.ajax({
+			url : '/situations',
+			type : 'get',
+			cache : false,
+			success : function(data, textStatus, jqXHR) {
+				$('#situations').empty();
+				var html;
+				var doc;
+				for (var i = 0; i < data.length; i++) {
+					doc = data[i];
+					html = '<div class="situation" id="' + doc._id +'">' +
+							'<div class="edit-remove">' +
+							'<button class="edit-situation" type="button">Edit</button>' +
+							'</div>' +
+							'<p>' + doc.description + '</p>' +
+							'<img src="/thumb/' + doc.img1.id + '" />' +
+							'<img src="/thumb/' + doc.img2.id + '" />' +
+							'<img src="/thumb/' + doc.img3.id + '" />' +
+							'<img src="/thumb/' + doc.img4.id + '" />' +
+							'</div>';
+					$('#situations').append(html);
+				}
+				
+				$('button.edit-situation').click(function() {
+					situationEdit.reset();
+					var situationId = $(this).parent().parent().attr('id');
+					situationEdit.editSituation(situationId);
+				});
+			}
+		});
 	}
 };
 

@@ -10,11 +10,15 @@ var save = function(req, res) {
 
 var list = function(req, res) {
 	dal.getSituations(function(docs) {
-		var sample = randUtil.getRandSample(docs, req.params.num);
+		if (req.params.num) {
+			var situations = randUtil.getRandSample(docs, req.params.num);
+		} else {
+			var situations = docs;
+		}
 		
-		var jsonSample= JSON.stringify(sample);
+		var jsonSituations= JSON.stringify(situations);
 		res.setHeader('Content-Type', 'text/json');
-		res.send(jsonSample);
+		res.send(jsonSituations);
 	});
 };
 

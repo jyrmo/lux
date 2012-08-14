@@ -41,7 +41,7 @@ app.post('/upload', upload.upload);
 app.get('/img/:id', img.img);
 app.get('/thumb/:id', img.thumb);
 app.post('/situation', situation.save);
-app.get('/situations/:num', situation.list);
+app.get('/situations/:num?', situation.list);
 app.post('/stats', stats.save);
 
 app.listen(3000, function(){
