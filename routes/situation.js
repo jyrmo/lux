@@ -4,7 +4,7 @@ var randUtil = require('../modules/randUtil.js');
 var save = function(req, res) {
 	dal.save('situations', req.body);
 	var objResponse = {success : true};
-	res.setHeader('Content-Type', 'text/json');
+	res.setHeader('Content-Type', 'application/json');
 	res.send(JSON.stringify(objResponse));
 };
 
@@ -17,7 +17,7 @@ var list = function(req, res) {
 		}
 		
 		var jsonSituations= JSON.stringify(situations);
-		res.setHeader('Content-Type', 'text/json');
+		res.setHeader('Content-Type', 'application/json');
 		res.send(jsonSituations);
 	});
 };
