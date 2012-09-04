@@ -5,6 +5,7 @@ goog.require('lime.Scene');
 goog.require('lime.Layer');
 goog.require('lime.Circle');
 goog.require('lime.Label');
+goog.require('lime.Renderer');
 goog.require('lime.fill.Stroke');
 goog.require('lime.animation.Spawn');
 goog.require('lime.animation.FadeTo');
@@ -38,6 +39,8 @@ lux.start = function() {
 		timeValue = new lime.Label().setAnchorPoint(0, 0).setPosition(110, 45)
 			.setSize(100, 30).setText('0')
 		;
+	
+	sceneGame.setRenderer(lime.Renderer.CANVAS);
 	
 	stats.appendChild(pointsLabel);
 	stats.appendChild(pointsValue);
