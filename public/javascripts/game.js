@@ -4,52 +4,26 @@ goog.require('goog.net.XhrIo');
 
 goog.require('lime.Director');
 goog.require('lime.Scene');
-goog.require('lime.Layer');
-goog.require('lime.Circle');
 goog.require('lime.Label');
 goog.require('lime.Renderer');
-goog.require('lime.fill.Stroke');
 goog.require('lime.fill.Image');
-goog.require('lime.animation.Spawn');
-goog.require('lime.animation.FadeTo');
-goog.require('lime.animation.ScaleTo');
-goog.require('lime.animation.MoveTo');
 
 lux.messenger = {
-	element : null,
-	
-	init : function(selector) {
-		// TODO
-		//messenger.element = $(selector);
-	},
-	
-	wrapMsg : function(msg) {
-		//var wrappedMsg = '<p>' + msg + '</p>';
-		
-		//return wrappedMsg;
-	},
-	
 	display : function(msg) {
-		//var html = messenger.wrapMsg(msg);
-		//messenger.element.html(html);
-		//messenger.element.show();
+		lux.msg.setText(msg);
 	},
 	
 	flash : function(msg, secs) {
-		//alert(msg);
-		//messenger.display(msg);
-		//setTimeout('messenger.clear()', 1000 * secs);
+		lux.messenger.display(msg);
+		setTimeout('lux.messenger.clear()', 1000 * secs);
 	},
 	
 	add : function(msg) {
-		//var html = messenger.wrapMsg(msg);
-		//messenger.element.append(html);
-		//messenger.element.show();
+		lux.msg.setText(lux.msg.getText() + "\n" + msg)
 	},
 	
 	clear : function() {
-		//messenger.element.empty();
-		//messenger.element.hide();
+		lux.msg.setText('');
 	}
 };
 
@@ -103,10 +77,25 @@ lux.init = function() {
 	lux.initUi();
 	
 	// Show loading message.
-	lux.messenger.flash('Loading...', 1);
+	lux.messenger.display('Loading...');
 
 	// Load situations.
-	// Start loop.
+	var xhrIo = new goog.net.XhrIo();
+	goog.events.listen(xhrIo, 'complete', function() {
+		if (xhrIo.isSuccess()) {
+			var situations = xhrIo.getResponseJson();
+			
+			// Clear loading message.
+			lux.messenger.clear();
+			
+			// Start loop.
+			lux.loop();
+		} else {
+			lux.messenger.display('Error loading situations.');
+		}
+	});
+	// TODO: Put number of situations in conf.
+	xhrIo.send('/situations/10');
 };
 
 lux.loop = function() {
@@ -134,8 +123,11 @@ lux.initUi = function() {
 		clock = new lime.Sprite().setFill('/images/clock.png')
 			.setPosition(1090, 125).setAnchorPoint(0, 0),
 		scoreBoard = new lime.Sprite().setFill('/images/score-board.png')
-			.setPosition(115, 250).setAnchorPoint(0, 0)
-		;
+			.setPosition(115, 250).setAnchorPoint(0, 0),
+		msg = new lime.Label().setPosition(950, 50).setAnchorPoint(0, 0)
+			.setFontSize(50).setFontColor('#f0f0f0'),
+		question = new lime.Label().setPosition(225, 50);
+	;
 	
 	sceneGame.setRenderer(lime.Renderer.CANVAS);
 	sceneGame.appendChild(background);
@@ -145,31 +137,25 @@ lux.initUi = function() {
 	background.appendChild(frame4);
 	background.appendChild(clock);
 	background.appendChild(scoreBoard);
+	background.appendChild(msg);
+	background.appendChild(question);
 	
 	director.makeMobileWebAppCapable();
 
 	director.replaceScene(sceneGame);
-
-	/*
-	var xhrIo = new goog.net.XhrIo();
-	goog.events.listen(xhrIo, 'complete', function() {
-		if (xhrIo.isSuccess()) {
-			var situations = xhrIo.getResponseJson();
-		} else {
-			// TODO: Error.
-		}
-	});
-	// TODO: Put number of situations in conf.
-	xhrIo.send('/situations/10');
-	*/
+	
+	lux.frame1 = frame1;
+	lux.frame2 = frame2;
+	lux.frame3 = frame3;
+	lux.frame4 = frame4;
+	lux.clock = clock;
+	lux.scoreBoard = scoreBoard;
+	lux.msg = msg;
+	lux.question = question;
 };
 
 lux.start = function() {
 	lux.init();
-	
-	// TODO: Add start and game over scenes.
-	
-	
 };
 
 goog.exportSymbol('lux.start', lux.start);
