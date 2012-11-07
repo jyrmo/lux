@@ -1,6 +1,7 @@
 goog.provide('lux');
 
 goog.require('goog.net.XhrIo');
+goog.require('goog.Uri.QueryData');
 
 goog.require('lime.Director');
 goog.require('lime.Scene');
@@ -40,7 +41,7 @@ lux.time = {
 	update : function() {
 		var curTime = Math.floor(new Date().valueOf() / 1000);
 		var elapsedTime = curTime - lux.time.startTime;
-		// TODO: UI update.
+		lux.timeLabel.setText(elapsedTime);
 		lux.time.timeout = setTimeout('lux.time.update()', 1000);
 	},
 	
@@ -73,40 +74,115 @@ lux.util = {
 };
 
 lux.init = function() {
+	// Initialize score.
+	lux.points = 0;
+	
 	// Setup UI.
 	lux.initUi();
 	
 	// Show loading message.
 	lux.messenger.display('Loading...');
-
+	
 	// Load situations.
 	var xhrIo = new goog.net.XhrIo();
 	goog.events.listen(xhrIo, 'complete', function() {
 		if (xhrIo.isSuccess()) {
-			var situations = xhrIo.getResponseJson();
+			lux.situations = xhrIo.getResponseJson();
+			lux.numSituation = -1;
 			
 			// Clear loading message.
 			lux.messenger.clear();
+			lux.isPlaying = true;
+			
+			// Start timer.
+			lux.time.start();
 			
 			// Start loop.
-			lux.loop();
+			lux.advanceLoop();
 		} else {
 			lux.messenger.display('Error loading situations.');
 		}
 	});
-	// TODO: Put number of situations in conf.
 	xhrIo.send('/situations/10');
 };
 
-lux.loop = function() {
-	// TODO
+lux.frameClicked = function(num) {
+	if (!lux.isPlaying) {
+		return;
+	}
+	
+	// Update score.
+	var situation = lux.situations[lux.numSituation];
+	var imgNum = lux.mapPosImgNum[num];
+	var answerPoints = situation['img' + imgNum].points;
+	lux.points += parseFloat(answerPoints);
+	lux.score.setText('Correct: ' + lux.points + '/' + (lux.numSituation + 1));
+	
+	// Notify user.
+	var isCorrect = parseFloat(answerPoints) == 1;
+	var msg = isCorrect ? 'Correct' : 'Wrong answer';
+	lux.messenger.flash(msg, 1);
+	
+	// Advance loop.
+	lux.advanceLoop();
+};
+
+lux.advanceLoop = function() {
+	// Get the next situation.
+	lux.numSituation++;
+	if (lux.numSituation >= lux.situations.length) {
+		return lux.end();
+	}
+	var situation = lux.situations[lux.numSituation];
+	
+	// Render the question and options.
+	lux.question.setText(situation.description);
+	
+	// TODO: Randomize imgs better.
+	lux.mapPosImgNum = [];
+	var arrPos = [1, 2, 3, 4];
+	var arrPosShuffled = lux.util.shuffle(arrPos);
+	var imgIdx = 0;
+	var posNum;
+	var imgSprite;
+	while (arrPosShuffled.length > 0) {
+		posNum = arrPosShuffled.shift();
+		imgIdx++;
+		lux.frames[posNum].setFill('/img/' + situation['img' + imgIdx].id);
+		lux.mapPosImgNum[posNum] = imgIdx;
+	}
 };
 
 lux.end = function() {
-	// TODO
+	lux.isPlaying = false;
+	
+	// Stop timer.
+	lux.time.stop();
+	
+	// Notify user.
+	setTimeout('lux.messenger.display("Game over")', 2000);
+	
+	// Save results.
+	var xhrIo = new goog.net.XhrIo();
+	goog.events.listen(xhrIo, 'complete', function() {
+		if (xhrIo.isSuccess()) {
+			
+		} else {
+			lux.messenger.display('Error saving results.');
+		}
+	});
+	var mapResults = new goog.structs.Map({
+		time : lux.time.gameTime,
+		points : lux.points
+	});
+	
+	var strResults = goog.Uri.QueryData.createFromMap(mapResults).toString();
+	xhrIo.send('/stats', 'POST', strResults);
 };
 
 lux.initUi = function() {
+	// TODO: Change mouse cursor on clickable sprites.
+	
 	var director = new lime.Director(document.body, 1920, 1200),
 		sceneGame = new lime.Scene().setSize(1920,1200),
 		bgImg = new lime.fill.Image('/images/background-wall.jpg'),
@@ -126,7 +202,12 @@ lux.initUi = function() {
 			.setPosition(115, 250).setAnchorPoint(0, 0),
 		msg = new lime.Label().setPosition(950, 50).setAnchorPoint(0, 0)
 			.setFontSize(50).setFontColor('#f0f0f0'),
-		question = new lime.Label().setPosition(225, 50);
+		question = new lime.Label().setPosition(225, 50).setAnchorPoint(0, 0)
+			.setFontSize(50).setFontColor('#f0f0f0'),
+		score = new lime.Label().setPosition(100, 100).setAnchorPoint(0, 0)
+			.setFontSize(25).setFontColor('#f0f0f0').setText('Correct: 0/0'),
+		timeLabel = new lime.Label().setPosition(160, 190).setAnchorPoint(0, 0)
+			.setFontSize(30).setFontColor('#101010').setText('0');
 	;
 	
 	sceneGame.setRenderer(lime.Renderer.CANVAS);
@@ -139,19 +220,35 @@ lux.initUi = function() {
 	background.appendChild(scoreBoard);
 	background.appendChild(msg);
 	background.appendChild(question);
+	scoreBoard.appendChild(score);
+	clock.appendChild(timeLabel);
 	
 	director.makeMobileWebAppCapable();
-
+	
+	var interactions = [
+		goog.events.EventType.CLICK,
+		goog.events.EventType.TOUCHSTART
+	];
+	goog.events.listen(frame1, interactions, function() {
+		lux.frameClicked(1);
+	});
+	goog.events.listen(frame2, interactions, function() {
+		lux.frameClicked(2);
+	});
+	goog.events.listen(frame3, interactions, function() {
+		lux.frameClicked(3);
+	});
+	goog.events.listen(frame4, interactions, function() {
+		lux.frameClicked(4);
+	});
+	
 	director.replaceScene(sceneGame);
 	
-	lux.frame1 = frame1;
-	lux.frame2 = frame2;
-	lux.frame3 = frame3;
-	lux.frame4 = frame4;
-	lux.clock = clock;
-	lux.scoreBoard = scoreBoard;
+	lux.frames = [null, frame1, frame2, frame3, frame4];
 	lux.msg = msg;
 	lux.question = question;
+	lux.score = score;
+	lux.timeLabel = timeLabel;
 };
 
 lux.start = function() {
